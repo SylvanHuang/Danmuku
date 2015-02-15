@@ -1,6 +1,10 @@
 # Danmuku
 Danmuku / "弹幕"
 
+# Screenshot
+
+![Screenshot](http://ejq.me/wp-content/uploads/2015/02/DanmukuScreenshot2.png)
+
 # TODO
 
 [*] Colorful danmuku
