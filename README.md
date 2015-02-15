@@ -3,7 +3,11 @@ Danmuku / "弹幕"
 
 # TODO
 
-[ ] Colorful danmuku
+[*] Colorful danmuku
+
+[ ] **More** Colorful danmuku
+
+[ ] Special Effect
 
 # How to
 

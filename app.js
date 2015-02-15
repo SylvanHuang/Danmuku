@@ -31,6 +31,6 @@ io.on('connection', function (socket) {
   socket.emit('message-hello', { server: 'EJQDanmuku' , uid: getUid(curTime)});
   socket.on('dmk', function (msg) {
     console.log(msg);
-    io.emit('message', { uid: msg.uid , danmuku: msg.cont });
+    io.emit('message', msg);
   });
 });

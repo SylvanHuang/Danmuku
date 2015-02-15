@@ -48,22 +48,56 @@
       <div class="form">
         <h2 class="heading">氢酱弹幕发射器</h2>
         <input type="text" class="form-control" id="danmuku" placeholder="Danmuku Here"></input>
+        <div class="row">
+        <div id="colorSelector" class="col-xs-6">
+          <div class="btn-group" data-toggle="buttons" style="">
+            <label class="btn btn-xs active" style="color:rgb(0,0,0);">
+              <input type="radio" name="color" id="c1" autocomplete="off" value="c1" checked>Aa</label>
+            <label class="btn btn-xs" style="color:rgb(20,167,228);">
+              <input type="radio" name="color" id="c2" autocomplete="off" value="c2">Aa</label>
+            <label class="btn btn-xs" style="color:rgb(241,119,129);">
+              <input type="radio" name="color" id="c3" autocomplete="off" value="c3">Aa</label>
+            <label class="btn btn-xs" style="color:rgb(154,94,251);">
+              <input type="radio" name="color" id="c4" autocomplete="off" value="c4">Aa</label>
+            <label class="btn btn-xs" style="color:rgb(110,251,132);">
+              <input type="radio" name="color" id="c5" autocomplete="off" value="c5">Aa</label>
+          </div>
+        </div>
+        <div id="moodSelector" class="col-xs-3">
+          <div class="btn-group" data-toggle="buttons" style="">
+            <label class="btn btn-xs active">
+              <input type="radio" name="dir" id="c1" autocomplete="off" value="ltr" checked><i class="fa fa-arrow-left"></i></label>
+            <label class="btn btn-xs">
+              <input type="radio" name="dir" id="c2" autocomplete="off" value="cen"><i class="fa fa-align-center"></i></label>
+          </div>
+        </div>
+        </div>
         <button class="btn btn-lg btn-primary btn-block" id="send"><i class="fa fa-paper-plane"></i></button>
       </div>
 
     </div> <!-- /container -->
 </body>
 <script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+<script src="http://cdn.bootcss.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script>
   var socket = io.connect('http://192.168.1.5:8080');
   var uid = "";
+  var color = {'c1' : {r:0,g:0,b:0} ,
+               'c2' : {r:20,g:167,b:228} , 
+               'c3' : {r:241,g:119,b:129} , 
+               'c4' : {r:154,g:94,b:251} ,
+               'c5' : {r:110,g:251,b:132}};
   socket.on('message-hello', function (data) {
     console.log(data);
     uid = data.uid;
   });
   $("#send").click(function () {
-    socket.emit("dmk" , {uid: uid,cont: $("#danmuku").val()});
+    socket.emit("dmk" , {uid: uid ,
+                         danmuku: $("#danmuku").val() , 
+                         color : color[$("input[name='color']:checked").val()] ,
+                         dir : $("input[name='dir']:checked").val()
+                         });
     $("#danmuku").val('');
   });
 </script>

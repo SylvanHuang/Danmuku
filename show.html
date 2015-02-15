@@ -12,7 +12,7 @@
 <script>
   var socket = io.connect('http://localhost:8080');
   var uid = "";
-  var ondisplay = new Map();
+  var onDisplay = new Map();
   var hRow = new Array();
   var rRow = new Array();
   var canvas = document.getElementById('danmuku');
@@ -28,15 +28,30 @@
     hRow[i]=rRow[i]=0;
   }
   
+  function drawColorText( dct , text , tx , ty , cr , cg , cb) {
+    dct.fillStyle = "rgb("+cr+","+cg+","+cb+")";
+    dct.fillText(text,tx,ty);
+  }
+  
   function draw() {
     var time = new Date();
-    ondisplay.forEach(function (value, key, mapObj) {
-      if (key < time - 8000) {
+    onDisplay.forEach(function (value, key, mapObj) {
+      if (key < time - (value.dir == 'ltr' ? '9000' : '8000')) {
         console.log("RM "+key);
-        hRow[value.pos] = hRow[value.pos] - 1 ;
-        ondisplay.delete(key);
+        value.dir == 'ltr' ? 
+        hRow[value.pos] = hRow[value.pos] - 1 :
+        rRow[value.pos] = rRow[value.pos] - 1 ;
+        onDisplay.delete(key);
       } else {
-        cat.fillText(value.text , cache.width + ( ( cache.width + value.len ) * (key - time) / 8000 ) , (1 + value.pos) * 30);
+        drawColorText(cat ,
+                      value.text , 
+                      value.dir == 'ltr' ? 
+                      cache.width + ( ( cache.width + value.len ) * (key - time) / 8000 ) :
+                      cache.width/2 - value.len/2 ,
+                      (1 + value.pos) * 30 ,
+                      value.color.r ,
+                      value.color.g ,
+                      value.color.b );
       }
     });
     ct.clearRect(0, 0, canvas.width,canvas.height);
@@ -51,12 +66,33 @@
   socket.on('message', function (data) {
     var time = new Date().getTime();
     var selrow = 0;
-    for (var i = 0 ; i < totrow; i++) {
-      if (hRow[i] < hRow[selrow]) { selrow = i; }
+    if (data.dir == 'ltr')
+    {
+      for (var i = 0 ; i < totrow; i++) {
+        if (hRow[i] < hRow[selrow]) { selrow = i; }
+      }
+      hRow[selrow] = hRow[selrow] + 1;
+    } else {
+      for (var i = 0 ; i < totrow; i++) {
+        if (rRow[i] < rRow[selrow]) { selrow = i; }
+      }
+      rRow[selrow] = rRow[selrow] + 1;
     }
-    hRow[selrow] = hRow[selrow] + 1;
     $("#ruler").html(data.danmuku);
-    ondisplay.set(time , { text : data.danmuku , pos : selrow , len : $("#ruler")[0].offsetWidth});
+    onDisplay.set(time , { 
+      text : data.danmuku , 
+      pos : selrow , 
+      len : $("#ruler")[0].offsetWidth , 
+      color : data.color ,
+      dir : data.dir
+    });
+    console.log({ 
+      text : data.danmuku , 
+      pos : selrow , 
+      len : $("#ruler")[0].offsetWidth , 
+      color : data.color ,
+      dir : data.dir
+    });
   });
   
   setInterval(draw,20);
