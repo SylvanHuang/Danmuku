@@ -15,8 +15,8 @@
   var ondisplay = new Map();
   var hRow = new Array();
   var rRow = new Array();
+  var canvas = document.getElementById('danmuku');
   var totrow = Math.round(canvas.height / 30);
-  var canvas = document.getElementById('danmuku')
   var ct = canvas.getContext('2d');
   var cache = document.createElement("canvas");
   cache.width = canvas.width;
@@ -31,12 +31,12 @@
   function draw() {
     var time = new Date();
     ondisplay.forEach(function (value, key, mapObj) {
-      if (key < time - 5000) {
+      if (key < time - 8000) {
         console.log("RM "+key);
         hRow[value.pos] = hRow[value.pos] - 1 ;
         ondisplay.delete(key);
       } else {
-        cat.fillText(value.text , cache.width + ( ( cache.width + value.len ) * (key - time) / 5000 ) , (1 + value.pos) * 30);
+        cat.fillText(value.text , cache.width + ( ( cache.width + value.len ) * (key - time) / 8000 ) , (1 + value.pos) * 30);
       }
     });
     ct.clearRect(0, 0, canvas.width,canvas.height);
