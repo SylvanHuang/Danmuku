@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>EJQ - Danmuku</title>
+</head>
+<body style="margin:0;">
+  <canvas id="danmuku" width="500" height="300"></canvas>
+  <span id="ruler" style="visibility:hidden;font-size:24px;"></span>
+</body>
+<script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  var socket = io.connect('http://localhost:8080');
+  var uid = "";
+  var ondisplay = new Map();
+  var hRow = new Array();
+  var rRow = new Array();
+  var totrow = Math.round(canvas.height / 30);
+  var canvas = document.getElementById('danmuku')
+  var ct = canvas.getContext('2d');
+  var cache = document.createElement("canvas");
+  cache.width = canvas.width;
+  cache.height = canvas.height;
+  var cat = cache.getContext('2d');
+  ct.font = '24px sans-serif';
+  cat.font = '24px sans-serif';
+  for (var i = 0 ; i < totrow ; i++) {
+    hRow[i]=rRow[i]=0;
+  }
+  
+  function draw() {
+    var time = new Date();
+    ondisplay.forEach(function (value, key, mapObj) {
+      if (key < time - 5000) {
+        console.log("RM "+key);
+        hRow[value.pos] = hRow[value.pos] - 1 ;
+        ondisplay.delete(key);
+      } else {
+        cat.fillText(value.text , cache.width + ( ( cache.width + value.len ) * (key - time) / 5000 ) , (1 + value.pos) * 30);
+      }
+    });
+    ct.clearRect(0, 0, canvas.width,canvas.height);
+    ct.drawImage(cache, 0, 0); 
+    cat.clearRect(0, 0, cache.width,cache.height);
+  }
+  
+  socket.on('message-hello', function (data) {
+    console.log(data);
+    uid = data.uid;
+  });
+  socket.on('message', function (data) {
+    var time = new Date().getTime();
+    var selrow = 0;
+    for (var i = 0 ; i < totrow; i++) {
+      if (hRow[i] < hRow[selrow]) { selrow = i; }
+    }
+    hRow[selrow] = hRow[selrow] + 1;
+    $("#ruler").html(data.danmuku);
+    ondisplay.set(time , { text : data.danmuku , pos : selrow , len : $("#ruler")[0].offsetWidth});
+  });
+  
+  setInterval(draw,20);
+  
+</script>
+</html>

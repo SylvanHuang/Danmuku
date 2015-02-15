@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>EJQ - Danmuku</title>
+  <link href="http://cdn.bootcss.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet">
+  <link href="http://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  <style>
+  body {
+  padding-top: 40px;
+  padding-bottom: 40px;
+  background-color: #eee;
+}
+.-heading {
+  margin-bottom: 10px;
+}
+
+.form {
+  max-width: 330px;
+  position: relative;
+  height: auto;
+  max-width: 330px;
+  padding: 15px;
+  margin: 0 auto;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  font-size: 16px;
+}
+
+.form-control {
+  position: relative;
+  height: auto;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  padding: 10px;
+  font-size: 16px;
+}
+.form-control:focus {
+  z-index: 2;
+}
+  </style>
+</head>
+<body>
+
+    <div class="container">
+
+      <div class="form">
+        <h2 class="heading">氢酱弹幕发射器</h2>
+        <input type="text" class="form-control" id="danmuku" placeholder="Danmuku Here"></input>
+        <button class="btn btn-lg btn-primary btn-block" id="send"><i class="fa fa-paper-plane"></i></button>
+      </div>
+
+    </div> <!-- /container -->
+</body>
+<script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  var socket = io.connect('http://192.168.1.5:8080');
+  var uid = "";
+  socket.on('message-hello', function (data) {
+    console.log(data);
+    uid = data.uid;
+  });
+  $("#send").click(function () {
+    socket.emit("dmk" , {uid: uid,cont: $("#danmuku").val()});
+    $("#danmuku").val('');
+  });
+</script>
+</html>
